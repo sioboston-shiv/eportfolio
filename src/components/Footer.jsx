@@ -1,9 +1,10 @@
 export default function Footer({ data }) {
   return (
-    <footer className="bg-dark px-10 md:px-20 py-11 flex flex-wrap justify-between items-center gap-5">
+    <footer id="footer" className="bg-dark px-10 md:px-20 py-11 flex flex-wrap justify-between items-center gap-5">
       <div>
         <div className="text-lg font-extrabold text-white tracking-tight">{data.name}</div>
-        <div className="text-sm text-accent mt-1">{data.email}</div>
+        <a href={`mailto:${data.email}`} className="text-sm text-accent mt-1 hover:text-white transition-colors">{data.email}</a>
+        <a href={data.linkedin} target="_blank" rel="noreferrer" className="block text-sm text-accent mt-1 hover:text-white transition-colors">LinkedIn →</a>
       </div>
       <div className="flex gap-5">
         {data.links.map(l => (

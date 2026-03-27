@@ -8,7 +8,6 @@ import Prototypes from './components/Prototypes'
 import Philosophy from './components/Philosophy'
 import AIStack from './components/AIStack'
 import Education from './components/Education'
-import WorkWithMe from './components/WorkWithMe'
 import Footer from './components/Footer'
 import * as content from './content'
 
@@ -25,7 +24,6 @@ export default function App() {
       <Philosophy data={content.philosophy} />
       <AIStack data={content.aiStack} />
       <Education data={content.education} />
-      <WorkWithMe data={content.workWithMe} />
       <Footer data={content.footer} />
     </div>
   )

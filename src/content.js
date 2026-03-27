@@ -6,14 +6,14 @@
 
 export const nav = {
   logo: 'Siobhan McAuley',
-  links: ['About', 'Skills', 'Experience', 'Projects', 'Prototypes', 'AI Stack', 'Contact'],
-  cta: 'Work With Me',
+  links: ['About', 'Skills', 'Experience', 'Projects', 'Prototypes', 'AI Stack'],
+  cta: 'Get In Touch',
 }
 
 export const hero = {
   eyebrow: 'Senior Product Manager · Boston, MA',
   firstName: 'Siobhan',
-  lastName: 'McAuley.',
+  lastName: 'McAuley',
   tagline: 'Product Manager obsessed with turning complex, multi-persona journeys into scalable experiences. 14 years in EdTech — onboarding, activation, IAM, and getting users to value, fast.',
   primaryBtn: { label: 'View Case Studies', href: '#projects' },
   secondaryBtn: { label: 'Download Resume', href: 'https://drive.google.com/file/d/YOUR_RESUME_ID/view' },
@@ -196,6 +196,7 @@ export const workWithMe = {
 export const footer = {
   name: 'Siobhan McAuley',
   email: 'sio.boston@gmail.com',
+  linkedin: 'https://www.linkedin.com/in/siobhan-mcauley-pm',
   links: [
     { label: 'LinkedIn', href: 'https://www.linkedin.com/in/siobhan-mcauley-pm' },
     { label: 'Resume', href: 'https://drive.google.com/file/d/YOUR_RESUME_ID/view' },

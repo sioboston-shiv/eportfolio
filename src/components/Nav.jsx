@@ -24,7 +24,7 @@ export default function Nav({ data }) {
       {/* CTA + hamburger */}
       <div className="flex items-center gap-3">
         <button
-          onClick={() => scrollTo('Contact')}
+          onClick={() => scrollTo('Footer')}
           className="bg-accent text-white text-xs font-semibold px-3.5 py-1.5 rounded-md hover:bg-accent/90 transition-colors"
         >
           {data.cta}
