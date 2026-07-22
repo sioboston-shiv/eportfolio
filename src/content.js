@@ -37,6 +37,8 @@ export const about = {
     'A/B Testing & Experimentation',
     'Compliance (COPPA, FERPA, WCAG)',
     'Time-to-Value Optimization',
+    'Agile Methodology'
+    'Data Driven'
     'Product-Led Growth',
   ],
 }
@@ -69,16 +71,16 @@ export const experience = {
   heading: 'Career Timeline',
   roles: [
     {
-      dates: '2016 – 2025',
+      dates: '2012 – 2025',
       title: 'Product Manager, Achieve Platform',
       org: 'Macmillan Learning · Boston',
       desc: 'Orchestrated end-to-end product strategy for onboarding, authentication, and IAM across B2C and B2B channels. Led segmentation of HS and HE IAM architectures for COPPA/FERPA compliance, implemented SSO/LMS integrations (LTI, SAML, OAuth), launched district-level analytics dashboards, and drove 19%+ YoY revenue growth.',
     },
     {
-      dates: '2011 – 2016',
-      title: 'Product Owner',
+      dates: '2011 – 2012',
+      title: 'Senior New Media Editor',
       org: 'Macmillan Learning · Boston',
-      desc: 'Contributed to requirements gathering, competitive analysis, customer research, and feature prioritisation across Macmillan\'s digital learning portfolio. Built deep technical fluency across the product stack.',
+      desc: 'Developed digital learning content and instructor-facing experiences for Higher Education, the product immersion that shaped my understanding of ed-user behavior and drove my transition into product management.',
     },
   ],
 }
