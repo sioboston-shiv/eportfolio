@@ -37,8 +37,8 @@ export const about = {
     'A/B Testing & Experimentation',
     'Compliance (COPPA, FERPA, WCAG)',
     'Time-to-Value Optimization',
-    'Agile Methodology'
-    'Data Driven'
+    'Agile Methodology',
+    'Data Driven',
     'Product-Led Growth',
   ],
 }
