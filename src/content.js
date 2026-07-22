@@ -119,7 +119,7 @@ export const caseStudies = {
 export const prototypes = {
   label: 'Prototypes',
   heading: 'Built with AI tools',
-  sub: 'Rapid prototypes built with Bolt, Replit, and Lovable to validate product concepts and test experiences before committing to full development cycles.',
+  sub: 'Rapid prototypes built with Claude Fable, Bolt, Replit, and Lovable to validate product concepts and test experiences before committing to full development cycles.',
   items: [
      {
       title: 'Retention Dashboard',
