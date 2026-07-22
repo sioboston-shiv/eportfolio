@@ -16,7 +16,7 @@ export const hero = {
   lastName: 'McAuley',
   tagline: 'Product Manager obsessed with turning complex, multi-persona journeys into scalable experiences. 14 years in EdTech — onboarding, activation, IAM, and getting users to value, fast.',
   primaryBtn: { label: 'View Case Studies', href: '#projects' },
-  secondaryBtn: { label: 'Download Resume', href: 'https://drive.google.com/file/d/YOUR_RESUME_ID/view' },
+  secondaryBtn: { label: 'Download Resume', href: '/resume.pdf' },
   stats: [
     { num: '14+', label: 'Years in Product' },
     { num: '19%', label: 'YoY Revenue Growth' },
