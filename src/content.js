@@ -199,7 +199,6 @@ export const footer = {
   linkedin: 'https://www.linkedin.com/in/siobhan-mcauley-pm',
   links: [
     { label: 'LinkedIn', href: 'https://www.linkedin.com/in/siobhan-mcauley-pm' },
-    { label: 'Resume', href: 'https://drive.google.com/file/d/YOUR_RESUME_ID/view' },
     { label: 'Email', href: 'mailto:sio.boston@gmail.com' },
   ],
 }
