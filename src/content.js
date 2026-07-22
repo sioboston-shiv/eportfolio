@@ -70,6 +70,12 @@ export const experience = {
   label: 'Experience',
   heading: 'Career Timeline',
   roles: [
+      {
+      dates: '2025 – prsesnt',
+      title: 'Founder & Product Lead',
+      org: 'The Hearth (Independent)',
+      desc: 'Built and shipped a live iOS app independently, from concept through App Store launch, using React NaAve, Expo, Supabase, and the Anthropic API. Designed and implemented a freemium subscription model (Wanderer/Practitioner Users) using RevenueCat, including custom backend logic to protect comped user access across RevenueCat sync cycles. Integrated an AI conversational companion via the Anthropic API, owning prompt architecture, context management, and post-launch itera9on as sole PM, designer, and product owner throughout.',
+    },
     {
       dates: '2012 – 2025',
       title: 'Product Manager, Achieve Platform',
