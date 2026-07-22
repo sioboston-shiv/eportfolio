@@ -125,8 +125,7 @@ export const prototypes = {
       title: 'Retention Dashboard',
       tech: ['Claude Fable'],
       desc: 'Re-enrollment automation prototype for Admissions Dashboard, with funnel-risk call queues, live confirmation-state tracking, and matching parent nudge cards.',
-        url: 'https://claude.ai/public/artifacts/d8c4290a-b7f3-47a8-b3b2-e3255e5fc439',
-  external: true,
+        url: '/prototypes/enrollnudge.html',
     },
     {
       title: 'Analytics Dashboard',
