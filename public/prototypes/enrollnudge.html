@@ -1,1 +1,803 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Brightwheel — Re-enrollment Prototype v2</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bw-purple:#5A50C8; --bw-purple-dark:#4B44B0; --bw-indigo:#4B4DD8;
+  --bw-ink:#2B2B33; --bw-muted:#767B8A; --bw-line:#E4E7EF;
+  --bw-header:#EBEEF6; --bw-bg:#FFFFFF;
+  --pill-teal-bg:#DDF0EE; --pill-teal:#1C8F80;
+  --pill-pink-bg:#F9DEE9; --pill-pink:#C2427F;
+  --pill-cream-bg:#FAEBD3; --pill-cream:#C2822A;
+  --pill-lav-bg:#EEEDFB;  --pill-lav:#4B4DD8;
+  --pill-mint-bg:#E4F5F2; --pill-mint:#1C9E8F;
+  --risk-red:#D8438A; --ok-green:#1C9E8F; --warn:#E8A33D;
+  --radius:8px;
+  font-size:15px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Nunito Sans',-apple-system,'Segoe UI',sans-serif;background:#EDEFF4;color:var(--bw-ink);}
+button{font-family:inherit;cursor:pointer}
 
+/* ---------- prototype chrome (not part of product UI) ---------- */
+.proto-bar{background:#1F2333;color:#fff;padding:10px 18px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;position:sticky;top:0;z-index:60}
+.proto-bar .tag{font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:#9AA1BC;font-weight:800}
+.seg{display:flex;background:#2C3147;border-radius:999px;padding:3px}
+.seg button{border:none;background:transparent;color:#C6CBE0;font-weight:700;font-size:.85rem;padding:6px 14px;border-radius:999px}
+.seg button.on{background:#fff;color:#1F2333}
+.proto-bar .spacer{flex:1}
+.proto-btn{border:1px solid #4A5070;background:transparent;color:#DFE3F5;font-weight:700;font-size:.83rem;padding:6px 12px;border-radius:6px}
+.proto-btn:hover{background:#2C3147}
+.proto-btn.primary{background:#5A50C8;border-color:#5A50C8;color:#fff}
+.proto-label{font-size:.8rem;color:#9AA1BC;font-weight:700}
+
+/* ---------- app frame ---------- */
+.frame{max-width:1280px;margin:18px auto;background:var(--bw-bg);border-radius:14px;overflow:hidden;box-shadow:0 10px 40px rgba(30,34,60,.18);display:flex;min-height:820px}
+.sidebar{width:208px;background:var(--bw-purple);color:#fff;display:flex;flex-direction:column;flex-shrink:0}
+.logo{display:flex;align-items:center;gap:8px;padding:20px 18px 16px;font-weight:800;font-size:1.05rem}
+.logo svg{flex-shrink:0}
+.nav{flex:1;padding:6px 10px}
+.nav a{display:flex;align-items:center;gap:10px;color:#E7E5FA;text-decoration:none;font-size:.86rem;font-weight:700;padding:9px 12px;border-radius:6px;margin-bottom:2px}
+.nav a .ic{width:15px;text-align:center;opacity:.85}
+.nav a.active{background:#fff;color:var(--bw-purple)}
+.side-bottom{padding:12px 10px 16px}
+.side-bottom .help{color:#E7E5FA;font-size:.85rem;font-weight:700;padding:8px 12px;display:flex;gap:10px}
+.user{display:flex;align-items:center;gap:10px;background:var(--bw-purple-dark);border-radius:8px;padding:8px 10px;margin-top:6px}
+.user .av{width:28px;height:28px;border-radius:50%;background:#8F87E0;display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:800}
+.user .nm{font-size:.78rem;font-weight:800;line-height:1.15}
+.user .sc{font-size:.68rem;color:#CFCBF2}
+
+.main{padding:28px 60px 60px;max-width:1024px;margin:18px auto}
+.page-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px}
+.page-head h1{font-size:1.85rem;font-weight:900;letter-spacing:-.01em}
+.btn-primary{background:var(--bw-indigo);color:#fff;border:none;border-radius:7px;font-weight:800;font-size:.9rem;padding:10px 16px}
+.btn-primary:hover{background:#3F41C4}
+
+/* ---------- re-enrollment card ---------- */
+.re-card{border:1px solid var(--bw-line);border-radius:12px;margin-bottom:26px;overflow:hidden;box-shadow:0 1px 3px rgba(40,45,80,.05)}
+.re-head{display:flex;align-items:center;gap:12px;padding:14px 18px;background:linear-gradient(90deg,#F4F3FC,#FBF7FD);cursor:pointer}
+.re-head .chev{transition:transform .2s;color:var(--bw-muted);font-size:.8rem}
+.re-card.open .re-head .chev{transform:rotate(90deg)}
+.re-title{font-weight:900;font-size:1.02rem}
+.re-sub{font-size:.8rem;color:var(--bw-muted);font-weight:700}
+.badge{font-size:.72rem;font-weight:800;padding:3px 10px;border-radius:999px}
+.badge.days{background:var(--pill-cream-bg);color:var(--pill-cream)}
+.badge.days.urgent{background:var(--pill-pink-bg);color:var(--pill-pink)}
+.badge.risk{background:var(--pill-pink-bg);color:var(--pill-pink)}
+.badge.new{background:var(--bw-indigo);color:#fff;letter-spacing:.05em}
+.re-head .grow{flex:1}
+.re-updated{font-size:.72rem;color:var(--bw-muted);display:flex;align-items:center;gap:6px}
+.re-updated button{border:none;background:none;color:var(--bw-muted);font-size:.85rem;padding:2px}
+.re-updated button:hover{color:var(--bw-indigo)}
+.re-body{padding:18px;display:none}
+.re-card.open .re-body{display:block}
+.re-success{padding:13px 18px;font-weight:800;font-size:.9rem;color:var(--ok-green);background:#F2FAF8;display:none;align-items:center;gap:8px}
+.re-card.done .re-success{display:flex}
+.re-card.done .re-body,.re-card.done .re-head .badge.risk{display:none}
+
+.metric-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px}
+.metric{border-radius:var(--radius);padding:14px 16px}
+.metric .v{font-size:1.5rem;font-weight:900}
+.metric .l{font-size:.75rem;font-weight:700;color:var(--bw-muted);margin-top:2px}
+.m-conf{background:var(--pill-mint-bg)} .m-conf .v{color:var(--pill-mint)}
+.m-risk{background:var(--pill-pink-bg)} .m-risk .v{color:var(--pill-pink)}
+.m-rate{background:var(--pill-lav-bg)} .m-rate .v{color:var(--pill-lav)}
+.m-wait{background:var(--pill-cream-bg)} .m-wait .v{color:var(--pill-cream)}
+
+.sec-label{font-size:.72rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--bw-muted);margin:4px 0 10px}
+.rooms{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
+.room{border:1px solid var(--bw-line);border-radius:var(--radius);padding:12px 14px}
+.room .rn{font-weight:800;font-size:.88rem;display:flex;justify-content:space-between;align-items:center}
+.dot{width:9px;height:9px;border-radius:50%}
+.room .cnt{font-size:.74rem;color:var(--bw-muted);font-weight:700;margin:4px 0 8px}
+.bar{height:7px;border-radius:99px;background:#EFF1F7;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--pill-mint);border-radius:99px;transition:width .5s}
+
+/* todo queue */
+.todo{border:1px solid #F0D4E3;background:#FEF8FB;border-radius:10px;padding:14px 16px;margin-bottom:20px}
+.todo-head{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.todo-head .t{font-weight:900;font-size:.95rem;color:var(--pill-pink)}
+.todo-head .s{font-size:.76rem;color:var(--bw-muted);font-weight:700}
+.todo-item{background:#fff;border:1px solid var(--bw-line);border-radius:8px;padding:11px 14px;margin-bottom:8px}
+.ti-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.ti-who{min-width:190px}
+.ti-who .c{font-weight:800;font-size:.9rem}
+.ti-who .g{font-size:.76rem;color:var(--bw-muted);font-weight:700}
+.ti-meta{font-size:.76rem;color:var(--bw-muted);font-weight:700;min-width:110px}
+.ti-meta b{color:var(--bw-ink)}
+.ti-days{font-size:.74rem;font-weight:800;color:var(--pill-pink)}
+.ti-actions{margin-left:auto;display:flex;gap:8px;align-items:center}
+.btn-stop{background:#fff;border:1.5px solid var(--pill-pink);color:var(--pill-pink);font-weight:800;font-size:.78rem;padding:6px 12px;border-radius:6px}
+.btn-stop:hover{background:var(--pill-pink-bg)}
+.btn-stop[disabled]{border-color:var(--bw-line);color:var(--bw-muted);cursor:default;background:#F7F8FB}
+.outcomes{display:none;margin-top:10px;padding-top:10px;border-top:1px dashed var(--bw-line)}
+.todo-item.logging .outcomes{display:block}
+.chip-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px}
+.chip{border:1.5px solid var(--bw-line);background:#fff;border-radius:999px;font-size:.76rem;font-weight:800;padding:5px 12px;color:var(--bw-ink)}
+.chip.sel{border-color:var(--bw-indigo);background:var(--pill-lav-bg);color:var(--bw-indigo)}
+.note-row{display:flex;gap:8px}
+.note-row input{flex:1;border:1px solid var(--bw-line);border-radius:6px;padding:7px 10px;font-family:inherit;font-size:.8rem}
+.btn-log{background:var(--bw-indigo);color:#fff;border:none;border-radius:6px;font-weight:800;font-size:.78rem;padding:7px 14px}
+.btn-log[disabled]{background:#C8CADF;cursor:default}
+
+/* outstanding table */
+.re-table{width:100%;border-collapse:collapse;font-size:.84rem}
+.re-table th{background:var(--bw-header);text-align:left;font-size:.76rem;font-weight:800;padding:9px 12px;color:#3E4354}
+.re-table td{padding:10px 12px;border-bottom:1px solid #F0F2F8;vertical-align:middle}
+.re-table tr.flash td{animation:flash 1.4s ease}
+@keyframes flash{0%{background:#E4F5F2}100%{background:transparent}}
+.who .c{font-weight:800;color:var(--bw-indigo)}
+.who .g{font-size:.74rem;color:var(--bw-muted);font-weight:700}
+.pill{display:inline-block;font-size:.73rem;font-weight:800;padding:4px 11px;border-radius:6px;white-space:nowrap}
+.p-out{background:var(--pill-pink-bg);color:var(--pill-pink)}
+.p-rem{background:var(--pill-cream-bg);color:var(--pill-cream)}
+.p-sub{background:var(--pill-mint-bg);color:var(--pill-mint)}
+.p-res{background:var(--pill-lav-bg);color:var(--pill-lav)}
+.btn-nudge{background:#fff;border:1.5px solid var(--bw-indigo);color:var(--bw-indigo);font-weight:800;font-size:.75rem;padding:5px 11px;border-radius:6px}
+.btn-nudge:hover{background:var(--pill-lav-bg)}
+.btn-nudge[disabled]{border-color:var(--bw-line);color:var(--bw-muted);cursor:default}
+.table-tools{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.resolved-wrap{margin-top:16px}
+.resolved-item{display:flex;gap:12px;align-items:center;font-size:.8rem;color:var(--bw-muted);font-weight:700;padding:7px 4px;border-bottom:1px dashed #EEF0F6}
+.resolved-item b{color:var(--bw-ink)}
+
+/* ---------- existing (static) dashboard ---------- */
+.divider{display:flex;align-items:center;gap:12px;margin:6px 0 20px;color:var(--bw-muted);font-size:.72rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase}
+.divider:before,.divider:after{content:"";flex:1;height:1px;background:var(--bw-line)}
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-bottom:22px}
+.stat{border-radius:10px;padding:20px 10px;text-align:center}
+.stat .n{font-size:1.9rem;font-weight:900}
+.stat .l{font-size:.8rem;color:#5B6070;font-weight:700;margin-top:2px}
+.s1{background:#EEEDFB}.s1 .n{color:#4B4DD8}
+.s2{background:#E4F5F2}.s2 .n{color:#1C9E8F}
+.s3{background:#FDF3E3}.s3 .n{color:#E8A33D}
+.s4{background:#F5EDFB}.s4 .n{color:#A24BD8}
+.s5{background:#FBEAF1}.s5 .n{color:#D8438A}
+.filters{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px}
+.f{border:1px solid var(--bw-line);border-radius:6px;padding:10px 12px;font-size:.85rem;color:#8A8FA0;font-weight:600;display:flex;justify-content:space-between;align-items:center;background:#fff}
+.f.active{border:1.5px solid #2BAA9B;color:#1C8F80;font-weight:700}
+.order-row{display:flex;justify-content:space-between;align-items:center;font-size:.8rem;color:var(--bw-muted);font-weight:700;margin-bottom:8px}
+table.pipe{width:100%;border-collapse:collapse;font-size:.85rem}
+table.pipe th{background:var(--bw-header);text-align:left;font-weight:800;font-size:.78rem;padding:11px 12px;color:#3E4354}
+table.pipe td{padding:12px;border-bottom:1px solid #F0F2F8}
+.avatar{width:30px;height:30px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:.68rem;font-weight:800;color:#fff;margin-right:8px;vertical-align:middle}
+a.stud{color:var(--bw-indigo);font-weight:700;text-decoration:underline}
+.sel-pill{font-size:.76rem;font-weight:800;padding:5px 10px;border-radius:5px;display:inline-flex;gap:6px;align-items:center}
+.chev-s{font-size:.6rem;opacity:.6}
+
+/* ---------- parent view ---------- */
+.parent-stage{display:flex;gap:34px;justify-content:center;align-items:flex-start;padding:34px 20px 60px}
+.phone{width:375px;background:#fff;border-radius:38px;border:10px solid #1F2333;box-shadow:0 18px 50px rgba(20,24,50,.3);overflow:hidden;flex-shrink:0}
+.phone-status{background:#fff;display:flex;justify-content:space-between;padding:10px 22px 4px;font-size:.72rem;font-weight:800}
+.p-appbar{background:var(--bw-purple);color:#fff;padding:14px 18px;display:flex;align-items:center;gap:10px;font-weight:800;font-size:.95rem}
+.p-body{padding:18px;background:#F6F7FB;min-height:560px}
+.p-from{font-size:.72rem;color:var(--bw-muted);font-weight:800;letter-spacing:.05em;text-transform:uppercase;margin-bottom:10px}
+.p-card{background:#fff;border-radius:14px;box-shadow:0 2px 10px rgba(40,45,80,.08);overflow:hidden}
+.p-card .p-top{padding:18px 18px 4px}
+.p-card h2{font-size:1.16rem;font-weight:900;line-height:1.3;margin-bottom:6px}
+.p-card .p-msg{font-size:.86rem;color:#4A4F60;line-height:1.5;font-weight:600}
+.p-consequence{margin:12px 18px 0;background:var(--pill-pink-bg);color:var(--pill-pink);font-size:.8rem;font-weight:800;border-radius:8px;padding:10px 12px;line-height:1.45}
+.p-urgent{margin:12px 18px 0;background:#FBE9F1;border:1.5px solid #E9A9C8;color:var(--pill-pink);border-radius:8px;padding:12px;text-align:center}
+.p-urgent .big{font-size:1.05rem;font-weight:900}
+.p-urgent .sm{font-size:.76rem;font-weight:700;margin-top:2px}
+.p-details{margin:16px 18px;border:1px solid var(--bw-line);border-radius:10px;overflow:hidden}
+.p-details .row{display:flex;justify-content:space-between;padding:9px 13px;font-size:.82rem;border-bottom:1px solid #F0F2F8}
+.p-details .row:last-child{border-bottom:none}
+.p-details .k{color:var(--bw-muted);font-weight:700}
+.p-details .v{font-weight:800}
+.p-cta{display:block;width:calc(100% - 36px);margin:4px 18px 8px;background:var(--bw-indigo);color:#fff;border:none;border-radius:10px;font-weight:900;font-size:.95rem;padding:14px}
+.p-cta:active{transform:scale(.985)}
+.p-deadline{font-size:.74rem;color:var(--bw-muted);font-weight:700;text-align:center;padding-bottom:16px}
+.p-secondary{display:block;text-align:center;font-size:.8rem;color:var(--bw-muted);font-weight:800;padding:0 0 16px;background:none;border:none;width:100%;text-decoration:underline}
+.p-reasons{padding:0 18px 16px;display:none}
+.p-reasons.open{display:block}
+.p-reasons .r{display:block;width:100%;text-align:left;border:1.5px solid var(--bw-line);background:#fff;border-radius:8px;padding:10px 12px;font-size:.82rem;font-weight:700;margin-bottom:7px}
+.p-reasons .r:hover{border-color:var(--bw-indigo)}
+.p-confirmed{padding:26px 18px;text-align:center}
+.p-confirmed .ck{width:58px;height:58px;border-radius:50%;background:var(--pill-mint-bg);color:var(--pill-mint);font-size:1.6rem;display:flex;align-items:center;justify-content:center;margin:0 auto 12px}
+.p-confirmed h2{font-size:1.15rem;font-weight:900}
+.p-confirmed p{font-size:.84rem;color:var(--bw-muted);font-weight:700;margin-top:4px}
+.parent-side{max-width:330px}
+.parent-side h3{font-size:.95rem;font-weight:900;margin-bottom:8px}
+.parent-side p{font-size:.82rem;color:#4A4F60;line-height:1.55;font-weight:600;margin-bottom:14px}
+.state-list{display:flex;flex-direction:column;gap:6px}
+.state-list button{text-align:left;border:1.5px solid var(--bw-line);background:#fff;border-radius:8px;padding:10px 13px;font-size:.83rem;font-weight:800}
+.state-list button.on{border-color:var(--bw-indigo);background:var(--pill-lav-bg);color:var(--bw-indigo)}
+.state-list .d{display:block;font-size:.72rem;color:var(--bw-muted);font-weight:700;margin-top:2px}
+.ph2-toggle{margin-top:16px;display:flex;align-items:center;gap:8px;font-size:.8rem;font-weight:800}
+
+/* toast + modal */
+#toasts{position:fixed;bottom:22px;right:22px;z-index:100;display:flex;flex-direction:column;gap:8px}
+.toast{background:#1F2333;color:#fff;font-size:.83rem;font-weight:700;padding:11px 16px;border-radius:8px;box-shadow:0 6px 20px rgba(0,0,0,.25);display:flex;gap:10px;align-items:center;animation:tin .25s ease}
+.toast .tic{color:#5FD3B7}
+@keyframes tin{from{transform:translateY(10px);opacity:0}to{transform:none;opacity:1}}
+.modal-bg{position:fixed;inset:0;background:rgba(25,28,45,.45);z-index:90;display:none;align-items:center;justify-content:center}
+.modal-bg.open{display:flex}
+.modal{background:#fff;border-radius:12px;width:430px;max-width:92vw;padding:22px}
+.modal h3{font-weight:900;margin-bottom:4px}
+.modal .ms{font-size:.8rem;color:var(--bw-muted);font-weight:700;margin-bottom:14px}
+.preview{border:1px solid var(--bw-line);border-radius:10px;padding:14px;font-size:.83rem;line-height:1.5;background:#FAFBFE;margin-bottom:16px}
+.preview b{display:block;margin-bottom:4px}
+.modal .acts{display:flex;justify-content:flex-end;gap:10px}
+.btn-ghost{background:none;border:none;font-weight:800;color:var(--bw-muted);font-size:.85rem;padding:9px 10px}
+.hidden{display:none!important}
+@media(max-width:980px){.metric-row,.rooms{grid-template-columns:repeat(2,1fr)}.stats{grid-template-columns:repeat(3,1fr)}.filters{grid-template-columns:repeat(2,1fr)}.sidebar{display:none}}
+@media(max-width:700px){
+  .frame{margin:8px;border-radius:10px;min-height:auto}
+  .main{padding:16px 12px 40px}
+  .page-head h1{font-size:1.35rem}
+  .metric-row,.rooms,.filters{grid-template-columns:1fr}
+  .stats{grid-template-columns:repeat(2,1fr)}
+  .re-table,table.pipe{display:block;overflow-x:auto;-webkit-overflow-scrolling:touch}
+  .re-head{flex-wrap:wrap;row-gap:6px}
+  .ti-actions{margin-left:0;width:100%;justify-content:flex-end}
+  .table-tools{flex-direction:column;align-items:flex-start;gap:8px}
+  .parent-stage{flex-direction:column;align-items:center;padding:16px 10px 40px;gap:20px}
+  .phone{width:100%;max-width:375px;border-width:6px;border-radius:28px}
+  .parent-side{max-width:375px}
+  .proto-bar{padding:8px 10px;gap:8px}
+  .proto-bar .tag{width:100%}
+  .seg button{padding:6px 10px;font-size:.78rem}
+}
+</style>
+</head>
+<body>
+
+<!-- ============ PROTOTYPE CHROME ============ -->
+<div class="proto-bar">
+  <span class="tag">Prototype v2 · Confirm opens the packet · Phase 1</span>
+  <div class="seg" id="viewSeg">
+    <button class="on" data-v="admin">Admin dashboard</button>
+    <button data-v="parent">Parent experience</button>
+  </div>
+  <div class="spacer"></div>
+  <span class="proto-label" id="timelineLabel">Demo timeline:</span>
+  <div class="seg" id="phaseSeg">
+    <button class="on" data-p="nudge">Nudge window · Jul 16</button>
+    <button data-p="call">Call window · Fri Jul 24</button>
+  </div>
+  <button class="proto-btn primary" id="simBtn">⚡ Simulate packet submission</button>
+  <button class="proto-btn" id="resetBtn">Reset demo</button>
+</div>
+
+<!-- ============ ADMIN VIEW ============ -->
+<div class="frame" id="adminView">
+  <main class="main">
+    <div class="page-head">
+      <h1>Admissions Dashboard</h1>
+      <button class="btn-primary">＋ &nbsp;New Student</button>
+    </div>
+
+    <!-- ======== NEW: RE-ENROLLMENT CARD ======== -->
+    <section class="re-card open" id="reCard">
+      <div class="re-head" onclick="toggleCard(event)">
+        <span class="chev">▶</span>
+        <div>
+          <div class="re-title">Fall 2026 Re-enrollment <span class="badge new">NEW</span></div>
+          <div class="re-sub">Deadline: Thursday, Jul 30 · Packets sent Jun 30</div>
+        </div>
+        <span class="badge days" id="daysBadge">14 days remaining</span>
+        <span class="badge risk" id="riskBadge">$12,920/mo at risk</span>
+        <div class="grow"></div>
+        <div class="re-updated" onclick="event.stopPropagation()">
+          <span id="lastUpdated">Updated just now</span>
+          <button title="Refresh (fallback — data is push-based)" onclick="manualRefresh()">⟳</button>
+        </div>
+      </div>
+
+      <div class="re-success" id="successLine">✓ &nbsp;<span id="successText">All 42 families confirmed for Fall 2026</span></div>
+
+      <div class="re-body">
+        <div class="metric-row">
+          <div class="metric m-conf"><div class="v" id="mConf">$53,260</div><div class="l">Confirmed revenue / mo</div></div>
+          <div class="metric m-risk"><div class="v" id="mRisk">$12,920</div><div class="l">At-risk revenue / mo</div></div>
+          <div class="metric m-rate"><div class="v" id="mRate">81%</div><div class="l">Confirmation rate</div></div>
+          <div class="metric m-wait"><div class="v" id="mWait">3</div><div class="l">Spots projected to waitlist</div></div>
+        </div>
+
+        <div class="sec-label">Room breakdown</div>
+        <div class="rooms" id="roomsGrid"></div>
+
+        <!-- todo / call queue (fires Friday, one week before deadline) -->
+        <div class="todo hidden" id="todoQueue">
+          <div class="todo-head">
+            <span class="t">📞 Your call list — 4 days before families are notified</span>
+            <span class="s">Pre-release notification goes to parents Tue Jul 28, 7–9am. Ordered by packet signal: never-opened first, in-progress last.</span>
+          </div>
+          <div id="todoItems"></div>
+        </div>
+
+        <div class="sec-label">Outstanding families</div>
+        <div class="table-tools">
+          <span style="font-size:.78rem;color:var(--bw-muted);font-weight:700">Packet sent but not submitted — this is the actionable list</span>
+          <button class="btn-nudge" id="bulkBtn" onclick="openBulk()">Send nudge to all outstanding</button>
+        </div>
+        <table class="re-table">
+          <thead><tr>
+            <th>Child / Guardian</th><th>Room</th><th>Tuition / mo</th><th>Packet sent</th><th>Packet activity</th><th>Last reminder</th><th>Status</th><th></th>
+          </tr></thead>
+          <tbody id="outTbody"></tbody>
+        </table>
+
+        <div class="resolved-wrap hidden" id="resolvedWrap">
+          <div class="sec-label">Resolved by admin</div>
+          <div id="resolvedList"></div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<!-- ============ PARENT VIEW ============ -->
+<div class="parent-stage hidden" id="parentView">
+  <div class="phone">
+    <div class="phone-status"><span>9:41</span><span>𝗹𝗹 ⌁ ▮</span></div>
+    <div class="p-appbar">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><g fill="#fff"><circle cx="12" cy="5" r="3"/><circle cx="12" cy="19" r="3"/><circle cx="5" cy="12" r="3"/><circle cx="19" cy="12" r="3"/><circle cx="12" cy="12" r="2.2" fill="#5A50C8"/></g></svg>
+      brightwheel
+    </div>
+    <div class="p-body">
+      <div class="p-from">From Sunshine Learning Center</div>
+      <div class="p-card" id="pCard"></div>
+    </div>
+  </div>
+
+  <div class="parent-side">
+    <h3>Parent confirmation flow — v2</h3>
+    <p>The CTA no longer <i>asserts</i> confirmation — it <b>opens the pre-filled re-enrollment packet</b> (review → sign → submit). "Confirmed" only appears when the packet is actually submitted, so the card can never disagree with the packet system. The link is an authenticated magic link: <b>no password</b>, but signed, single-family, and expiring.</p>
+    <div class="state-list" id="stateList">
+      <button data-s="n1" class="on">Invitation / Nudge 1 <span class="d">Day +7 · warm reminder</span></button>
+      <button data-s="n2">Nudge 2 <span class="d">Day +15 · consequence-forward, deadline named</span></button>
+      <button data-s="pre">Pre-release notification <span class="d">Tue of deadline week · urgent, release date named</span></button>
+      <button data-s="conf">Confirmed state <span class="d">Only after packet submitted</span></button>
+    </div>
+    <label class="ph2-toggle"><input type="checkbox" id="ph2Toggle" onchange="renderParent()"> Show Phase 2: “Something’s changed” + co-parent routing</label>
+    <p style="margin-top:14px;font-size:.76rem;color:var(--bw-muted)">Tip: tap the CTA to open Amara’s packet. <b>Submit it</b> and her row clears on the admin dashboard — or <b>leave mid-packet</b> and watch her funnel signal flip to “abandoned” and re-prioritize Maria’s call queue.</p>
+  </div>
+</div>
+
+<!-- bulk nudge modal -->
+<div class="modal-bg" id="bulkModal">
+  <div class="modal">
+    <h3>Send nudge to all outstanding families</h3>
+    <div class="ms" id="bulkCount"></div>
+    <div class="preview">
+      <b>Reminder: confirm your child’s spot for Fall 2026</b>
+      Hi [Guardian first name] — [Child]’s spot in [Room] is being held for Fall 2026. Your re-enrollment packet is <b>pre-filled</b> — review and sign by <b>Thursday, July 30</b> to keep the spot. Takes about 2 minutes, no password needed.
+      <div style="margin-top:8px;font-size:.74rem;color:var(--bw-muted);font-weight:700">Families who started their packet automatically get the “You’re almost done — finish [Child]’s packet” variant instead.</div>
+    </div>
+    <div class="acts">
+      <button class="btn-ghost" onclick="closeBulk()">Cancel</button>
+      <button class="btn-log" onclick="sendBulk()">Send to all outstanding</button>
+    </div>
+  </div>
+</div>
+
+<div id="toasts"></div>
+
+<script>
+/* ================= DATA ================= */
+const ROOMS = {
+  "Infant 1":  {cap:8,  enrolled:7,  tuition:1980},
+  "Toddler":   {cap:12, enrolled:11, tuition:1720},
+  "Preschool": {cap:16, enrolled:14, tuition:1450},
+  "Pre-K":     {cap:14, enrolled:10, tuition:1310},
+};
+const START = () => ([
+  {id:1, child:"Amara Diallo",  guardian:"Fatou Diallo",  phone:"(510) 555-0182", room:"Preschool", sent:"Jun 30", last:"Jul 7 · Nudge 1", days:16, status:"rem", funnel:"opened",    suppressed:false, outcome:null, note:""},
+  {id:2, child:"Theo Brennan",  guardian:"Kate Brennan",  phone:"(510) 555-0147", room:"Toddler",   sent:"Jun 30", last:"Jul 7 · Nudge 1", days:16, status:"rem", funnel:"none",      suppressed:false, outcome:null, note:""},
+  {id:3, child:"Marisol Vega",  guardian:"Carla Vega",    phone:"(510) 555-0121", room:"Infant 1",  sent:"Jun 30", last:"Jul 7 · Nudge 1", days:16, status:"rem", funnel:"none",      suppressed:false, outcome:null, note:""},
+  {id:4, child:"Jonah Kim",     guardian:"Daniel Kim",    phone:"(510) 555-0166", room:"Pre-K",     sent:"Jul 1",  last:"Jul 8 · Nudge 1", days:15, status:"rem", funnel:"started",   suppressed:false, outcome:null, note:""},
+  {id:5, child:"Priya Nair",    guardian:"Anjali Nair",   phone:"(510) 555-0135", room:"Preschool", sent:"Jul 1",  last:"Jul 8 · Nudge 1", days:15, status:"rem", funnel:"none",      suppressed:false, outcome:null, note:""},
+  {id:6, child:"Sam Okafor",    guardian:"Chidi Okafor",  phone:"(510) 555-0109", room:"Pre-K",     sent:"Jul 1",  last:"Jul 8 · Nudge 1", days:15, status:"rem", funnel:"opened",    suppressed:false, outcome:null, note:""},
+  {id:7, child:"Lucia Moretti", guardian:"Elena Moretti", phone:"(510) 555-0173", room:"Toddler",   sent:"Jul 2",  last:"Jul 9 · Nudge 1", days:14, status:"rem", funnel:"abandoned", suppressed:false, outcome:null, note:""},
+  {id:8, child:"Ruby Chen",     guardian:"Wei Chen",      phone:"(510) 555-0158", room:"Infant 1",  sent:"Jul 2",  last:"Jul 9 · Nudge 1", days:14, status:"out", funnel:"none",      suppressed:false, outcome:null, note:""},
+]);
+const FUNNEL = {
+  none:      {label:"Never opened",        cls:"p-out",  rank:0, hint:"highest risk — no engagement signal"},
+  opened:    {label:"Opened, not started", cls:"p-rem",  rank:1, hint:"saw the packet, hasn't begun"},
+  abandoned: {label:"Started · abandoned", cls:"p-rem",  rank:2, hint:"stalled mid-packet — send finish copy"},
+  started:   {label:"Started · in progress", cls:"p-res", rank:3, hint:"lowest call priority — likely to finish"},
+};
+let families = START();
+let resolved = [];           // {child, guardian, outcome, note, time}
+let phase = "nudge";         // nudge | call
+let parentState = "n1";
+let amaraConfirmed = false;
+const OUTCOMES = ["Confirmed","In discussion","Leaving","No answer","Wrong contact"];
+const money = n => "$" + n.toLocaleString();
+
+/* ================= DERIVED ================= */
+function outstanding(){ return families.filter(f => f.status!=="sub"); }
+function roomOutstanding(r){ return outstanding().filter(f=>f.room===r).length; }
+function totals(){
+  const totalFams = 42;
+  const out = outstanding();
+  const atRisk = out.reduce((s,f)=>s+ROOMS[f.room].tuition,0);
+  const allRev = Object.values(ROOMS).reduce((s,r)=>s+r.enrolled*r.tuition,0);
+  const leaving = resolved.filter(r=>r.outcome==="Leaving").length;
+  const confirmedFams = totalFams - out.length - leaving;
+  return {out:out.length, atRisk, conf:allRev - atRisk - resolved.filter(r=>r.outcome==="Leaving").reduce((s,r)=>s+ROOMS[r.room].tuition,0), rate:Math.round(confirmedFams/totalFams*100), wait:Math.max(0,Math.round(out.length*0.35)), leaving};
+}
+
+/* ================= RENDER: ADMIN ================= */
+function renderAdmin(){
+  const t = totals();
+  const card = document.getElementById("reCard");
+  // metrics
+  document.getElementById("mConf").textContent = money(t.conf);
+  document.getElementById("mRisk").textContent = money(t.atRisk);
+  document.getElementById("mRate").textContent = t.rate + "%";
+  document.getElementById("mWait").textContent = t.wait;
+  document.getElementById("riskBadge").textContent = money(t.atRisk) + "/mo at risk";
+  document.getElementById("daysBadge").textContent = phase==="nudge" ? "14 days remaining" : "6 days remaining";
+  document.getElementById("daysBadge").classList.toggle("urgent", phase==="call");
+
+  // rooms
+  document.getElementById("roomsGrid").innerHTML = Object.entries(ROOMS).map(([name,r])=>{
+    const out = roomOutstanding(name), sub = r.enrolled - out - resolved.filter(x=>x.room===name && x.outcome==="Leaving").length;
+    const pct = Math.round(sub/r.enrolled*100);
+    const dot = out>=3 ? "var(--risk-red)" : out>=2 ? "var(--warn)" : "var(--ok-green)";
+    return `<div class="room">
+      <div class="rn">${name} <span class="dot" style="background:${dot}"></span></div>
+      <div class="cnt">${sub} submitted · ${out} outstanding · cap ${r.cap}</div>
+      <div class="bar"><i style="width:${pct}%"></i></div>
+    </div>`;
+  }).join("");
+
+  // todo queue
+  const tq = document.getElementById("todoQueue");
+  if(phase==="call" && outstanding().length){
+    tq.classList.remove("hidden");
+    const q = [...outstanding()].sort((a,b)=> (FUNNEL[a.funnel].rank - FUNNEL[b.funnel].rank) || (b.days - a.days));
+    document.getElementById("todoItems").innerHTML = q.map(f=>`
+      <div class="todo-item ${f.open ? "logging":""}" id="ti-${f.id}">
+        <div class="ti-row">
+          <div class="ti-who"><div class="c">${f.child}</div><div class="g">${f.guardian} · ${f.phone}</div></div>
+          <div class="ti-meta">${f.room}<br><b>${money(ROOMS[f.room].tuition)}/mo</b></div>
+          <div class="ti-meta"><span class="pill ${FUNNEL[f.funnel].cls}" style="font-size:.68rem">${FUNNEL[f.funnel].label}</span><br><span style="font-size:.68rem">${FUNNEL[f.funnel].hint}</span></div>
+          <div class="ti-days">${f.days} days<br>unresponsive</div>
+          <div class="ti-actions">
+            <button class="btn-nudge" onclick="toggleLog(${f.id})">${f.open?"Hide log":"✎ Log call"}</button>
+            <button class="btn-stop" onclick="toggleMessages(${f.id})">${f.suppressed?"▶ Resume messages":"⏸ Stop messages"}</button>
+          </div>
+        </div>
+        <div class="outcomes">
+          <div class="chip-row">${OUTCOMES.map(o=>`<button class="chip ${f.outcome===o?"sel":""}" onclick="pickOutcome(${f.id},'${o}')">${o}</button>`).join("")}</div>
+          <div class="note-row">
+            <input placeholder="Optional note — not required" value="${f.note}" onchange="families.find(x=>x.id===${f.id}).note=this.value">
+            <button class="btn-log" ${f.outcome?"":"disabled"} onclick="logOutcome(${f.id})">Log outcome</button>
+          </div>
+        </div>
+      </div>`).join("");
+  } else { tq.classList.add("hidden"); }
+
+  // outstanding table
+  const tb = document.getElementById("outTbody");
+  const out = outstanding();
+  tb.innerHTML = out.map(f=>`
+    <tr id="row-${f.id}">
+      <td class="who"><div class="c">${f.child}</div><div class="g">${f.guardian}</div></td>
+      <td>${f.room}</td>
+      <td><b>${money(ROOMS[f.room].tuition)}</b></td>
+      <td>${f.sent}</td>
+      <td><span class="pill ${FUNNEL[f.funnel].cls}" title="${FUNNEL[f.funnel].hint}">${FUNNEL[f.funnel].label}</span></td>
+      <td>${f.last}</td>
+      <td><span class="pill ${f.suppressed?"p-res":(f.status==="rem"?"p-rem":"p-out")}">${f.suppressed?"Messages paused":(f.status==="rem"?"Reminder sent":"Packet outstanding")}</span></td>
+      <td><button class="btn-nudge" ${f.suppressed?"disabled":""} onclick="sendNudge(${f.id})">Send nudge</button></td>
+    </tr>`).join("");
+  document.getElementById("bulkBtn").disabled = !out.filter(f=>!f.suppressed).length;
+
+  // resolved strip
+  const rw = document.getElementById("resolvedWrap");
+  if(resolved.length){
+    rw.classList.remove("hidden");
+    document.getElementById("resolvedList").innerHTML = resolved.map(r=>`
+      <div class="resolved-item"><span class="pill p-res">Admin resolved</span><b>${r.child}</b> — ${r.outcome}${r.note?` · “${r.note}”`:""} <span style="margin-left:auto">${r.time}</span></div>`).join("");
+  } else rw.classList.add("hidden");
+
+  // card auto-state: zero outstanding → auto-collapse to success line
+  if(out.length===0){
+    card.classList.add("done"); card.classList.remove("open");
+    const leaving = resolved.filter(r=>r.outcome==="Leaving").length;
+    document.getElementById("successText").textContent =
+      leaving ? `All families resolved for Fall 2026 — ${42-leaving} confirmed, ${leaving} departing (spot released to waitlist)`
+              : `All 42 families confirmed for Fall 2026`;
+  } else { card.classList.remove("done"); }
+}
+
+/* ================= ACTIONS ================= */
+function toggleCard(e){
+  const card = document.getElementById("reCard");
+  if(card.classList.contains("done")) { card.classList.toggle("open"); return; }
+  card.classList.toggle("open");
+}
+function touchTimestamp(){
+  document.getElementById("lastUpdated").textContent = "Updated just now";
+}
+function manualRefresh(){
+  touchTimestamp(); renderAdmin();
+  toast("Dashboard refreshed — data is push-based; this is a fallback");
+}
+function sendNudge(id){
+  const f = families.find(x=>x.id===id);
+  f.last = "Jul " + (phase==="nudge"?16:24) + " · Manual"; f.status="rem";
+  touchTimestamp(); renderAdmin();
+  const finish = (f.funnel==="started" || f.funnel==="abandoned");
+  toast(finish ? `"Almost done" nudge sent to ${f.guardian} — finish-your-packet copy` : `Nudge sent to ${f.guardian}`);
+}
+function openBulk(){
+  document.getElementById("bulkCount").textContent =
+    outstanding().filter(f=>!f.suppressed).length + " families will receive this message. Preview:";
+  document.getElementById("bulkModal").classList.add("open");
+}
+function closeBulk(){ document.getElementById("bulkModal").classList.remove("open"); }
+function sendBulk(){
+  outstanding().filter(f=>!f.suppressed).forEach(f=>{ f.last = "Jul " + (phase==="nudge"?16:24) + " · Bulk"; f.status="rem"; });
+  closeBulk(); touchTimestamp(); renderAdmin();
+  toast("Nudge sent to all outstanding families");
+}
+function toggleLog(id){
+  const f = families.find(x=>x.id===id);
+  f.open = !f.open; renderAdmin();
+}
+function toggleMessages(id){
+  const f = families.find(x=>x.id===id);
+  if(!f.suppressed){
+    f.suppressed = true; f.open = true;   // opening the log is a hint, not a lock — item stays fully interactive
+    touchTimestamp(); renderAdmin();
+    toast(`Automated messages paused for the ${f.child.split(" ").slice(-1)} family`);
+  } else {
+    f.suppressed = false;
+    touchTimestamp(); renderAdmin();
+    toast(`Messages resumed for the ${f.child.split(" ").slice(-1)} family — re-enters cadence at the next scheduled step`);
+  }
+}
+function pickOutcome(id,o){
+  const f = families.find(x=>x.id===id);
+  f.outcome = (f.outcome===o) ? null : o;   // tappable, changeable, deselectable
+  renderAdmin();
+}
+function logOutcome(id){
+  const f = families.find(x=>x.id===id);
+  const o = f.outcome;
+  const time = phase==="call" ? "Fri Jul 24" : "Thu Jul 16";
+  const snapshot = {...f};
+  if(o==="Confirmed" || o==="Leaving" || o==="Wrong contact"){
+    // terminal outcomes: move to resolved strip, offer a 10s undo window
+    f.status="sub"; f.suppressed=true; f.open=false;
+    const label = o==="Wrong contact" ? "Wrong contact — update info" : o;
+    resolved.push({...f, time, outcome:label});
+    const msg = o==="Confirmed" ? `${f.child} confirmed — billing continuity flagged active`
+              : o==="Leaving"   ? `${f.child} flagged departing — spot opens to waitlist`
+              : `Contact flagged for update — messages suppressed pending correction`;
+    touchTimestamp(); renderAdmin();
+    toastUndo(msg, ()=>{
+      resolved = resolved.filter(r=>!(r.id===f.id && r.time===time));
+      Object.assign(f, snapshot); f.open=true;
+      touchTimestamp(); renderAdmin();
+      toast(`Undone — ${f.child} is back in the call queue`);
+    });
+  } else if(o==="No answer"){
+    f.suppressed=false; f.outcome=null; f.open=false; f.days=0; f.last=time+" · Call attempt";
+    touchTimestamp(); renderAdmin();
+    toast(`No answer logged — re-attempt flagged for tomorrow; messages remain active`);
+  } else { // In discussion — stays live and editable in the queue
+    f.suppressed=true; f.last=time+" · Call logged";
+    touchTimestamp(); renderAdmin();
+    toast(`Outcome logged: In discussion — messages stay paused, family stays in your queue`);
+  }
+}
+function simulateSubmission(){
+  const candidates = outstanding().filter(f=>!f.suppressed);
+  if(!candidates.length){ toast("No active outstanding families left to simulate"); return; }
+  const f = candidates[Math.floor(Math.random()*candidates.length)];
+  submitFamily(f, "Push update");
+}
+function submitFamily(f, label){
+  const row = document.getElementById("row-"+f.id);
+  if(row){ row.classList.add("flash"); }
+  setTimeout(()=>{
+    f.status="sub";
+    if(f.child==="Amara Diallo"){ amaraConfirmed = true; if(parentState!=="conf"){ parentState="conf"; } renderParent(); syncStateButtons(); }
+    touchTimestamp(); renderAdmin();
+    toast(`${label}: ${f.child}’s packet submitted — dashboard updated`);
+  }, 500);
+}
+
+/* ================= PARENT VIEW ================= */
+const AMARA = {child:"Amara Diallo", first:"Amara", room:"Preschool", program:"Preschool · 5 days, full day", start:"Mon, Aug 24, 2026", tuition:"$1,450/mo"};
+function detailsBlock(){
+  return `<div class="p-details">
+    <div class="row"><span class="k">Child</span><span class="v">${AMARA.child}</span></div>
+    <div class="row"><span class="k">Room</span><span class="v">${AMARA.room}</span></div>
+    <div class="row"><span class="k">Program</span><span class="v">${AMARA.program}</span></div>
+    <div class="row"><span class="k">Start date</span><span class="v">${AMARA.start}</span></div>
+    <div class="row"><span class="k">Tuition</span><span class="v">${AMARA.tuition}</span></div>
+  </div>`;
+}
+let prevParentState = "n1";
+function ctaBlock(){
+  return `<button class="p-cta" onclick="openPacket()">Review &amp; sign ${AMARA.first}’s packet</button>
+  <div class="p-deadline" style="padding-bottom:8px">Pre-filled — about 2 minutes · No password needed</div>
+  <button class="p-secondary" onclick="resendLink()">Email me this link</button>`;
+}
+function renderParent(){
+  const c = document.getElementById("pCard");
+  const ph2 = document.getElementById("ph2Toggle").checked;
+  if(parentState==="conf"){
+    c.innerHTML = `<div class="p-confirmed">
+      <div class="ck">✓</div>
+      <h2>${AMARA.first}’s packet is submitted — spot confirmed</h2>
+      <p>No further action required. See you in the fall!</p>
+      ${detailsBlock()}
+    </div>`;
+    return;
+  }
+  if(parentState==="packet1"){
+    c.innerHTML = `<div class="p-top">
+      <h2>${AMARA.first}’s Fall 2026 re-enrollment packet</h2>
+      <p class="p-msg"><b>Step 1 of 2 · Review.</b> We’ve pre-filled everything from your current enrollment — just check it’s still right.</p>
+    </div>
+    <div class="p-details">
+      <div class="row"><span class="k">Child</span><span class="v">${AMARA.child} <span class="pill p-sub" style="font-size:.62rem;margin-left:4px">Pre-filled</span></span></div>
+      <div class="row"><span class="k">Guardian</span><span class="v">Fatou Diallo <span class="pill p-sub" style="font-size:.62rem;margin-left:4px">Pre-filled</span></span></div>
+      <div class="row"><span class="k">Emergency contact</span><span class="v">Ibrahim Diallo <span class="pill p-sub" style="font-size:.62rem;margin-left:4px">Pre-filled</span></span></div>
+      <div class="row"><span class="k">Program</span><span class="v">${AMARA.program}</span></div>
+      <div class="row"><span class="k">Start date</span><span class="v">${AMARA.start}</span></div>
+      <div class="row"><span class="k">Tuition</span><span class="v">${AMARA.tuition}</span></div>
+    </div>
+    <button class="p-cta" onclick="parentState='packet2';renderParent()">Everything’s correct — continue to sign</button>
+    ${ph2 ? `<button class="p-secondary" onclick="toast('Phase 2: packet link routed to co-parent — they can review and sign instead')">Send this to my co-parent</button>`:""}
+    <button class="p-secondary" onclick="abandonPacket()">Leave — I’ll finish later</button>`;
+    return;
+  }
+  if(parentState==="packet2"){
+    c.innerHTML = `<div class="p-top">
+      <h2>Sign &amp; submit</h2>
+      <p class="p-msg"><b>Step 2 of 2.</b> Type your full name to sign ${AMARA.first}’s re-enrollment for Fall 2026.</p>
+    </div>
+    <div style="padding:0 18px">
+      <input id="sigName" placeholder="Type your full legal name" oninput="sigCheck()" style="width:100%;border:1.5px solid var(--bw-line);border-radius:8px;padding:12px;font-family:inherit;font-size:.9rem;font-style:italic;margin-bottom:10px">
+      <label style="display:flex;gap:8px;font-size:.78rem;font-weight:700;color:#4A4F60;align-items:flex-start"><input type="checkbox" id="sigAgree" onchange="sigCheck()" style="margin-top:2px">I agree to re-enroll ${AMARA.first} for Fall 2026 at the tuition shown, per the enrollment agreement.</label>
+    </div>
+    <button class="p-cta" id="sigBtn" disabled style="opacity:.5" onclick="submitPacket()">Sign &amp; submit packet</button>
+    <button class="p-secondary" onclick="abandonPacket()">Leave — I’ll finish later</button>`;
+    return;
+  }
+  if(parentState==="n1"){
+    c.innerHTML = `<div class="p-top">
+      <h2>It’s time to re-enroll ${AMARA.first} for Fall 2026 🎒</h2>
+      <p class="p-msg">Hi Fatou — we’re getting ready for the fall semester at Sunshine Learning Center and we’d love to have ${AMARA.first} back. Her packet is <b>already pre-filled</b> — just review and sign.</p>
+    </div>${detailsBlock()}${ctaBlock()}
+    <div class="p-deadline">Please submit by Thursday, July 30</div>`;
+  }
+  if(parentState==="n2"){
+    c.innerHTML = `<div class="p-top">
+      <h2>Reminder: ${AMARA.first}’s Fall 2026 packet isn’t submitted</h2>
+      <p class="p-msg">Hi Fatou — we haven’t received ${AMARA.first}’s re-enrollment packet yet. It’s pre-filled and takes about 2 minutes.</p>
+    </div>
+    <div class="p-consequence">${AMARA.first}’s spot will be released to the waitlist if her packet isn’t submitted by <b>Thursday, July 30</b>.</div>
+    ${detailsBlock()}${ctaBlock()}
+    <div class="p-deadline">Deadline: Thursday, July 30</div>`;
+  }
+  if(parentState==="pre"){
+    c.innerHTML = `<div class="p-top">
+      <h2>${AMARA.first}’s spot releases in 2 days</h2>
+    </div>
+    <div class="p-urgent"><div class="big">Spot releases Thursday, Jul 30 · 6:00 PM</div><div class="sm">After that, ${AMARA.first}’s spot goes to the next family on the waitlist. Her packet is pre-filled — submitting takes about 2 minutes.</div></div>
+    ${detailsBlock()}${ctaBlock()}
+    <div class="p-deadline">Submit by Thursday, July 30, 6:00 PM</div>
+    ${ph2 ? `<button class="p-secondary" onclick="document.getElementById('pReasons').classList.toggle('open')">Something’s changed — let the center know</button>
+    <div class="p-reasons" id="pReasons">
+      <button class="r" onclick="parentReason('We need more time on payment')">We need more time on payment</button>
+      <button class="r" onclick="parentReason('We are exploring other options')">We’re exploring other options</button>
+      <button class="r" onclick="parentReason('Our family situation has changed')">Our family situation has changed</button>
+      <button class="r" onclick="parentReason('I did not receive earlier messages')">I didn’t receive the earlier messages</button>
+    </div>`:""}`;
+  }
+}
+function amaraRec(){ return families.find(x=>x.child==="Amara Diallo"); }
+function openPacket(){
+  prevParentState = parentState;
+  const f = amaraRec();
+  if(f && f.status!=="sub" && f.funnel!=="started"){
+    f.funnel = "started"; touchTimestamp(); renderAdmin();
+    toast("Telemetry: Amara’s packet opened — funnel moved to “Started · in progress”");
+  }
+  parentState = "packet1"; syncStateButtons(); renderParent();
+}
+function abandonPacket(){
+  const f = amaraRec();
+  if(f && f.status!=="sub"){
+    f.funnel = "abandoned"; touchTimestamp(); renderAdmin();
+    toast("Telemetry: packet abandoned mid-flow — Maria’s queue re-prioritizes; next nudge uses finish-your-packet copy");
+  }
+  parentState = prevParentState; syncStateButtons(); renderParent();
+}
+function sigCheck(){
+  const ok = document.getElementById("sigName").value.trim().length > 3 && document.getElementById("sigAgree").checked;
+  const b = document.getElementById("sigBtn");
+  b.disabled = !ok; b.style.opacity = ok ? "1" : ".5";
+}
+function submitPacket(){
+  parentState = "conf"; syncStateButtons(); renderParent();
+  const f = amaraRec();
+  if(f && f.status!=="sub"){ f.status="sub"; amaraConfirmed=true; touchTimestamp(); renderAdmin(); }
+  toast("Packet submitted — Amara confirmed; admin dashboard updated via push");
+}
+function resendLink(){
+  toast("Magic link emailed to f.diallo@… — signed, single-family, expires in 7 days");
+}
+function parentReason(r){
+  const c = document.getElementById("pCard");
+  c.innerHTML = `<div class="p-confirmed">
+    <div class="ck" style="background:var(--pill-lav-bg);color:var(--pill-lav)">✉</div>
+    <h2>Thanks — we’ve let the center know</h2>
+    <p>“${r}” — Maria at Sunshine Learning Center will follow up with you directly. Automated reminders have stopped.</p>
+  </div>`;
+  const f = families.find(x=>x.child==="Amara Diallo");
+  if(f && f.status!=="sub"){ f.suppressed = true; f.last = "Parent reason: " + r; touchTimestamp(); renderAdmin(); }
+  toast("Phase 2: reason captured — family exits sequence; admin todo updated with signal");
+}
+function syncStateButtons(){
+  document.querySelectorAll("#stateList button").forEach(b=>b.classList.toggle("on", b.dataset.s===parentState));
+}
+
+/* ================= CHROME ================= */
+document.getElementById("viewSeg").addEventListener("click", e=>{
+  const b = e.target.closest("button"); if(!b) return;
+  document.querySelectorAll("#viewSeg button").forEach(x=>x.classList.remove("on")); b.classList.add("on");
+  const isAdmin = b.dataset.v==="admin";
+  document.getElementById("adminView").classList.toggle("hidden", !isAdmin);
+  document.getElementById("parentView").classList.toggle("hidden", isAdmin);
+  // Simulate, nudge/call timeline are admin-side controls — hidden in the parent experience
+  document.getElementById("phaseSeg").classList.toggle("hidden", !isAdmin);
+  document.getElementById("simBtn").classList.toggle("hidden", !isAdmin);
+  document.getElementById("timelineLabel").classList.toggle("hidden", !isAdmin);
+});
+document.getElementById("phaseSeg").addEventListener("click", e=>{
+  const b = e.target.closest("button"); if(!b) return;
+  document.querySelectorAll("#phaseSeg button").forEach(x=>x.classList.remove("on")); b.classList.add("on");
+  phase = b.dataset.p; renderAdmin();
+  toast(phase==="call" ? "Fri Jul 24: admin todo fired — 4-day call window before parents are notified Tue Jul 28" : "Jul 16: automated nudge window");
+});
+document.getElementById("stateList").addEventListener("click", e=>{
+  const b = e.target.closest("button"); if(!b) return;
+  parentState = b.dataset.s; syncStateButtons(); renderParent();
+});
+document.getElementById("simBtn").addEventListener("click", simulateSubmission);
+document.getElementById("resetBtn").addEventListener("click", ()=>{
+  families = START(); resolved = []; amaraConfirmed=false; parentState="n1";
+  document.getElementById("reCard").classList.add("open");
+  syncStateButtons(); renderAdmin(); renderParent(); toast("Demo reset");
+});
+
+function toastUndo(msg, undoFn){
+  const t = document.createElement("div"); t.className="toast";
+  t.innerHTML = `<span class="tic">●</span> ${msg} `;
+  const b = document.createElement("button");
+  b.textContent = "Undo";
+  b.style.cssText = "margin-left:8px;background:none;border:1px solid #5FD3B7;color:#5FD3B7;font-weight:800;font-size:.78rem;border-radius:5px;padding:4px 10px;cursor:pointer";
+  b.onclick = ()=>{ undoFn(); t.remove(); };
+  t.appendChild(b);
+  document.getElementById("toasts").appendChild(t);
+  setTimeout(()=>{ t.style.opacity="0"; t.style.transition="opacity .4s"; setTimeout(()=>t.remove(),400); }, 10000);
+}
+function toast(msg){
+  const t = document.createElement("div"); t.className="toast";
+  t.innerHTML = `<span class="tic">●</span> ${msg}`;
+  document.getElementById("toasts").appendChild(t);
+  setTimeout(()=>{ t.style.opacity="0"; t.style.transition="opacity .4s"; setTimeout(()=>t.remove(),400); }, 3400);
+}
+
+/* init */
+renderAdmin(); renderParent();
+</script>
+</body>
+</html>
