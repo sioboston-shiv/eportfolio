@@ -121,6 +121,12 @@ export const prototypes = {
   heading: 'Built with AI tools',
   sub: 'Rapid prototypes built with Bolt, Replit, and Lovable to validate product concepts and test experiences before committing to full development cycles.',
   items: [
+     {
+      title: 'Retention Dashboard',
+      tech: ['Claude Fable'],
+      desc: 'Re-enrollment automation prototype for Admissions Dashboard, with funnel-risk call queues, live confirmation-state tracking, and matching parent nudge cards.',
+      url: 'https://claude.ai/public/artifacts/d8c4290a-b7f3-47a8-b3b2-e3255e5fc439',
+    },
     {
       title: 'Analytics Dashboard',
       tech: ['React', 'TypeScript', 'Replit'],
