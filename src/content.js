@@ -27,7 +27,8 @@ export const hero = {
 export const about = {
   label: 'About',
   heading: 'Product leader. Systems thinker.',
-  bio: 'Product Manager with extensive experience leading SaaS initiatives in education technology across B2B and B2C markets. Proven record of driving adoption, engagement, and revenue growth through data-driven onboarding strategies, IAM innovation, and compliance leadership.',
+  bio: 'Senior Product Manager with 14 years building Macmillan's Achieve plaGorm, designing onboarding, IAM architecture, and analy9cs for 1.5M+ learners
+across higher educa9on and K–12. Hands-on AI product experience via The Hearth, a live iOS app shipped independently using the Anthropic API.''
   funFact: 'Siobhan grew up in Malahide, Ireland, where she discovered a love of horseback riding at ten — learning that the thrill of a long gallop along the strand comes from countless hours of practice and hard work.',
   pills: [
     'Onboarding & Activation',
