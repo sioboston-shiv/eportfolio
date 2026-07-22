@@ -20,9 +20,18 @@ export default function Prototypes({ data }) {
             </div>
             <div className="text-[15px] font-bold text-dark">{item.title}</div>
             <div className="text-xs text-muted leading-snug flex-1">{item.desc}</div>
-            <button onClick={() => setActive(item)} className="text-xs font-semibold text-accent text-left hover:underline">
-              View Prototype →
-            </button>
+           <button
+  onClick={() => {
+    if (item.url.includes('claude.ai')) {
+      window.open(item.url, '_blank', 'noopener,noreferrer')
+    } else {
+      setActive(item)
+    }
+  }}
+  className="text-xs font-semibold text-accent text-left hover:underline"
+>
+  View Prototype →
+</button>
           </div>
         ))}
       </div>
